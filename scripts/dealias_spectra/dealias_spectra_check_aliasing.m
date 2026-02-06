@@ -29,7 +29,7 @@ for i = 1:ss(1) % loop for range gates
         continue
     end
     
-    Nfft = sum(~isnan(vel(:,r_idx)));
+    Nfft = sum(~isnan(vel(:,r_idx)));  % why not shape[0] of vel?; vel.shape = (doppler spectrum, number of chirps)
     
     % only calculate noise floor if noise not given as input and spectra is not compressed
     if noiseflag == false && ~flag_compress_spec 
@@ -40,14 +40,14 @@ for i = 1:ss(1) % loop for range gates
     end
     
     % check if aliasing occured by checking if more than 'frac' percent of the bins exceeded
-    % mean noise leveöl at one of the spectra
+    % mean noise level at one end of the spectra
     frac = 5;    
     frac = ceil(Nfft/100*frac);
     
-    if flag_compress_spec % NaN's found in the spectra - must be compressed spectra
+    if flag_compress_spec % NaN's found in the spectra - must be compressed spectra ; if compressed: noise already nan ?
         
-        n_start = sum(~isnan(spec(i,1:frac+1)));
-        n_end = sum(~isnan(spec(i,Nfft-frac:Nfft))); 
+        n_start = sum(~isnan(spec(i,1:frac+1))); % number of nonnans in first fraction-part of spectrum
+        n_end = sum(~isnan(spec(i,Nfft-frac:Nfft))); % ... in last part of spectrum
          
     else % non-compressed spectra
         

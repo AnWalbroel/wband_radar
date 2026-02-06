@@ -1,6 +1,6 @@
 function [block_start, block_end] = radar_moments_get_blocks_of_signal(idx_signal,sv)
     
-    % ######### identify serparate blocks
+    % ######### identify separate blocks
     idx_diff = diff(idx_signal);
     
     s_idx = size(idx_diff);

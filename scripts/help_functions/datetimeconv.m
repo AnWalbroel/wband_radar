@@ -13,7 +13,7 @@ function timeout =  datetimeconv(yy,mm,dd,varargin) % datetimeconv(yy,mm,dd,hh,m
      ss = varargin{3};
  end
 
-    timeout  = datenum([yy,mm,dd,hh,mmm,ss])*86400 - datenum([2001 1 1])*86400;
+    timeout  = datenum([yy,mm,dd,hh,mmm,ss])*86400 - datenum([2001 1 1])*86400;  % = seconds since 2001-01-01
     
 end % function
 

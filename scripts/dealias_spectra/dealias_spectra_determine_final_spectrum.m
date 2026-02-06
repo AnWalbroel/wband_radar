@@ -27,7 +27,7 @@ status_flag = '0000';
 
 % ############### find maximum of spectrum
 
-if isnan(vm_guess) % start at center of 4rd spectrum
+if isnan(vm_guess) % start at center of 4th spectrum
     idx_in = single(floor(3.5*Nfft));
     status_flag(4) = '1';
 else
@@ -51,13 +51,13 @@ if idx_in-window < 1
     status_flag(3) = '1';
 elseif idx_in+window > numel(spec_chain)
     [~,idx_max] = max(spec_chain(end-Nfft:end));
-    idx_max = idx_max + numel(spec_chain) - Nfft - 1;
+    idx_max = idx_max + numel(spec_chain) - Nfft - 1; % to get the absolute index again within the chain, not just relative to end-Nfft:end
     status_flag(3) = '1';
 else
     
     if all(isnan(spec_chain(idx_in-window:idx_in+window))) % clearly a very bad guess velocity! (for compressed spectra)
         
-        [~, max1] = max(spec_chain(idx_in-window-Nfft:idx_in-window));
+        [~, max1] = max(spec_chain(idx_in-window-Nfft:idx_in-window)); % check the next parts of spec chain
         maxtest(1) = max1 + idx_in-window-Nfft -1;
         [~, max2] = max(spec_chain(idx_in+window:idx_in+window+Nfft));
         maxtest(2) = max2 + idx_in+window -1;
@@ -66,8 +66,8 @@ else
         
         % guess should not be at the edge of the spec chain
         tempvar = [1 2];
-        if maxtest(ind) < Nfft  || maxtest(ind) > 6*Nfft
-            idx_in =  maxtest(tempvar(~(tempvar == ind)));
+        if maxtest(ind) < Nfft  || maxtest(ind) > 6*Nfft % may not be in first and last part of spec chain
+            idx_in =  maxtest(tempvar(~(tempvar == ind))); % in other words: then take the other one
             idx_max = idx_in;
         else
             idx_in = maxtest(ind);
@@ -83,7 +83,7 @@ end
     
     
 if isnan(vm_guess) &&  vel_chain(idx_max) > 2.5
-    % likely hit the wrong max!
+    % likely hit the wrong max! (because updraft with 2.5 is unlikely?)
     
     idx_in = idx_max-Nfft;
     [~,idx_max] = max(spec_chain(idx_in-Nfft/4:idx_in+Nfft/4));
@@ -104,8 +104,6 @@ end
 % contain aliased contributions. to minimize that influence, different
 % procedure for compressed and non-compressed spectra is applied
 
-
-
 if flag_compress_spec 
     
     tempstruct = radar_moments(spec_chain(idx_max-Nfft/2:idx_max+Nfft/2-1), vel_chain(idx_max-Nfft/2:idx_max+Nfft/2-1),Nfft, 'moment_str','skew','linear','pnf',1.5,'nbins',5, 'compressed', flag_compress_spec, 'DualPol', 0, []);
@@ -116,7 +114,7 @@ if flag_compress_spec
     testleft = spec_chain(idx_in-Nfft/2-floor(0.1*Nfft):idx_in-Nfft/2+floor(0.1*Nfft)); % check left edge
     testrght = spec_chain(idx_in+Nfft/2-floor(0.1*Nfft):idx_in+Nfft/2+floor(0.1*Nfft)); % check right edge
     
-    if test1 && all(isnan(testleft))  && all(isnan(testrght)) %-> no shifting needed
+    if test1 && all(isnan(testleft)) && all(isnan(testrght)) %-> no shifting needed
         
         spec_out = spec_chain(idx_max-Nfft/2:idx_max+Nfft/2-1);
         vel_out = vel_chain(idx_max-Nfft/2:idx_max+Nfft/2-1);
@@ -133,7 +131,7 @@ if flag_compress_spec
 %     
 %     % number of data points above median within v(1)/v(end) -+v_n/4
 %     idx = find( spec > median(spec) );
-%     idx_inside = idx < ss(2)/4 | idx > 3/4*ss(2);
+%     idx_inside = idx < ss(2)/4 | idx > 3/4*ss(2); % ss(2) similar to Nfft
 %     frac = sum(idx_inside)/sum(idx_signal);
 % 
 %     if frac > 0.8 % then more than 80 % of the largest 50 % are located at the edge
@@ -146,7 +144,7 @@ end
 
 
 
-% cetner the spectrum so that it has the lowest value when adding
+% center the spectrum so that it has the lowest value when adding
 % the signals of the first and last entry, respectively.
 
 % check first that boundaries are not crossed
@@ -157,8 +155,10 @@ if ( idx_max - Nfft/4 - Nfft/2 >= 1 ) && ( idx_max + Nfft/4 + Nfft/2 - 1 <= nume
     shift_factor = 4;
 
     idx_shift = -Nfft/shift_factor:1:Nfft/shift_factor;
-    idx_edges = [(idx_max-3*Nfft/shift_factor:idx_max-Nfft/shift_factor)', (idx_max+Nfft/shift_factor-1:idx_max+3*Nfft/shift_factor-1)'];
-    edgesum = nansum(spec_chain(idx_edges),2);
+    idx_edges = [(idx_max-3*Nfft/shift_factor:idx_max-Nfft/shift_factor)', (idx_max+Nfft/shift_factor-1:idx_max+3*Nfft/shift_factor-1)']; 
+    % why these shifts? visualise; should they just have some distance to the peak (idx_max)?
+    edgesum = nansum(spec_chain(idx_edges),2); % axis 2: 1:Nfft or the 7 spectra?; check how this is accssed: are both axes addressed or just axis 1?
+    % isn't spec_chain 1D ? or does idx_edges turn it into a 2D matrix?
 
     % get minimum of edgesum
     [~,idx_min] = min(edgesum);
@@ -171,7 +171,7 @@ end
 if idx_max-Nfft/2 < 1
     spec_out = spec_chain(1:Nfft);
     vel_out = vel_chain(1:Nfft);
-elseif idx_max+Nfft/2-1 > numel(spec_chain)
+elseif idx_max+Nfft/2-1 > numel(spec_chain) % identified peak would be outside of legal range
     spec_out = spec_chain(end-Nfft+1:end);
     vel_out = vel_chain(end-Nfft+1:end);
 else

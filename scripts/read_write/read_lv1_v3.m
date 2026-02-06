@@ -113,7 +113,7 @@ data = [];
     data.time(1:data.totsamp) = int32(0); % time of sample [sec] since 1.1.2001 0:0:0
     data.sampleTms(1:data.totsamp) = single(-999); % milliseconds of sample
     data.QF(1:data.totsamp) = int8(0); % quality flag: bit 2 = ADC saturation, bit 3 = spectral width too high, bit 4 = no transm. power leveling
-    data.RR(1:data.totsamp) = single(-999); % rin rate [mm/h]
+    data.RR(1:data.totsamp) = single(-999); % rain rate [mm/h]
     data.rh(1:data.totsamp) = single(-999); % relative humidity [%]
     data.T_env(1:data.totsamp) = single(-999); % environmental temp [K]
     data.pres(1:data.totsamp) = single(-999); % pressure in [hPa]

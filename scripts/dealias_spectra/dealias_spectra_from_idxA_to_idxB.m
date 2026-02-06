@@ -30,18 +30,18 @@ function [spec_out, spec_hv_out, spec_re_out, spec_im_out, vel_out, status_flag,
 
 
 % ########### check into which direction the dealiasing should take place
-if idxA < idxB % from bottom to top
+if idxA < idxB % from bottom to top (or from non-aliased (clean) signal to cloud layer top)
     inc = 1;
 else
     inc = -1;
 end
 
 % ######### preallocate variables
-ss = size(spec);
+ss = size(spec);  % range x doppler spectrum
 idx = idxA:inc:idxB;
-n_levels = numel(idx); % from top to bottom
+n_levels = numel(idx);
 
-spec_out = spec(idx,:);
+spec_out = spec(idx,:); % selected the range gates from a to b
 vel_out = NaN(n_levels,ss(2));
 
 spec_hv_out = NaN(size(spec_out));
@@ -58,9 +58,9 @@ end
 
 tempflag = false(size(ss(1))); % indicates if spectra were determined correctly
 
-Nfft = sum(~isnan(vel));
+Nfft = sum(~isnan(vel)); % number of doppler spectrum bins for each chirp sequence
 
-cc = 0;
+cc = 0; % counts from idxA to idxB
 for ii = idxA:inc:idxB % 
 
     cc = cc + 1;
@@ -73,11 +73,11 @@ for ii = idxA:inc:idxB %
     end
     
     % ############## get spec and vel chains
-    % make a celovity array that is 5 times wider than the original, with
+    % make a velocity array that is 5 times wider than the original, with
     % the same doppler resolution
     vel_chain = (vel(1,r_idx) - 3*Nfft(r_idx)*delv(r_idx)) : delv(r_idx) : (vel(Nfft(r_idx),r_idx)+3*Nfft(r_idx)*delv(r_idx) + delv(r_idx));    
     
-    % check if chrip boundary is approached
+    % check if chirp boundary is approached
     [~,idx] = min(abs(ii-range_offsets));
     next_chirp = range_offsets(idx);
     
@@ -85,7 +85,7 @@ for ii = idxA:inc:idxB %
     if ii - inc > ss(1) || ii -inc < 1
         vm_guess = NaN;
     else
-        vm_guess = moments.vm(ii-inc);
+        vm_guess = moments.vm(ii-inc);  % inc must be included because idxA, which is where the function starts is one off the clean signal idx
         
     end
     
@@ -94,13 +94,13 @@ for ii = idxA:inc:idxB %
         % if doppler velocity at ii-inc is NaN, the function tries to find
         % another guess vm:
         % 1. looks for another reference velocity in the same column. Last
-        %    vel_win m are considered, and the nearest value is taken.
+        %    vel_win vm are considered, and the nearest value is taken.
         % 2. If no value found in the same column, the value of the same
         %    range of the previous time step is taken.
         % 3. If still no value found, average of +-vel_win/2 m of the previous
         %    time step is taken.
         % If none of the options leads to a guess velocity, NaN is returned.
-        vel_win = 50;
+        vel_win = 50; % window where to search?
         while isnan(vm_guess) && vel_win <= 200
             
             vm_guess = dealias_spectra_vm_guess_qual_check(moments.vm, vm_prev_col, ii, inc, dr(r_idx), vel_win);
@@ -122,8 +122,7 @@ for ii = idxA:inc:idxB %
     % spectra from 5 bins is concatenated to spec_chain
     [spec_chain, status_flag(ii,1:4)] = dealias_spectra_concetenate_spectra(vm_guess, spec(:,1:Nfft(r_idx)), vn(r_idx), ii, next_chirp, Nfft(r_idx));
     
-    %################ get final spectrum    
-    
+    %################ get final spectrum
     [spec_out(cc,1:Nfft(r_idx)), vel_out(cc,1:Nfft(r_idx)), status_flag(ii,1:4)] = dealias_spectra_determine_final_spectrum(vm_guess, spec_chain, vel_chain, Nfft(r_idx), flag_compress_spec);
 
     %############## quality check final spectrum
@@ -157,7 +156,7 @@ for ii = idxA:inc:idxB %
 
         ind1 = find(vel_chain == vel_out(cc,1));
         ind2 = find(vel_chain == vel_out(cc,Nfft(r_idx)));
-        spec_hv_out(cc,1:Nfft(r_idx)) =  spec_chain_hv(ind1:ind2);
+        spec_hv_out(cc,1:Nfft(r_idx)) = spec_chain_hv(ind1:ind2);
         
         % if full polarimetry, also shift the covariance spectrum
         if flag_DualPol == 2
@@ -176,7 +175,7 @@ for ii = idxA:inc:idxB %
     moments = dealias_spectra_write_tempmoments_to_finalmoments(moments, tempstruct, ii, moment_string);
 
     
-    if alias_flag == 1 % then centering did not work properly all follwing bins might be affected
+    if alias_flag == 1 % then centering did not work properly all following bins might be affected
         tempflag(ii:inc:idxB) = true;
     end
         

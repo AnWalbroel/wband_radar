@@ -1,4 +1,4 @@
-function vm_guess = dealias_spectra_vm_guess_qual_check(vm, vm_prev_col, ii, inc, dr,win)
+function vm_guess = dealias_spectra_vm_guess_qual_check(vm, vm_prev_col, ii, inc, dr, win)
 
 % this function looks for vm_guess if the bordering bins in the column do
 % not provide an estimate
@@ -17,12 +17,12 @@ function vm_guess = dealias_spectra_vm_guess_qual_check(vm, vm_prev_col, ii, inc
 % topdown = false;
 n = numel(vm);
 
-% get number of indexes that are not closer than 50 meters
+% get number of indexes that are closer than a given window (win) in meters
 n_bins_curr = floor(win/dr);
 
 % ######## create indexes for neighbour checks
 idx_prev = ii-inc*max([floor(n_bins_curr/2), 1]):inc:ii+inc*max([floor(n_bins_curr/2), 1]);
-idx_curr = ii-inc:-inc:ii-inc*max([1, n_bins_curr]);
+idx_curr = ii-inc:-inc:ii-inc*max([1, n_bins_curr]); % why ii-inc:...:i-inc? would expect one of the inc to have a different sign?
 
 % check if boundaries are exceeded
 idx_valid = idx_prev > 0 & idx_prev <= n;
@@ -51,7 +51,7 @@ function vm_guess = dealias_spectra_vm_guess_qual_check_neighbour_check(vm, vm_p
 
     vm_guess = NaN;
     
-    if ~isnan(idx_curr) % check if the next to bins of the current column contain dealiased signal
+    if ~isnan(idx_curr) % check if the bins next to of the current column contain dealiased signal
         vm_guess = vm( idx_curr(1)  -inc*find(~isnan(vm(idx_curr)),1) + inc );
     end
     

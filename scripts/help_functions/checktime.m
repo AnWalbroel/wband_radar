@@ -3,10 +3,10 @@ function data = checktime(data, config, reader)
 
 % 1. check if all timestamps in the correct hour
 
-[yy, mm, dd, hh, ~, ~] = datevec(double(data.time(1))/3600/24 + datenum([2001,1,1,0,0,0])); % assuming that first time is correct
+[yy, mm, dd, hh, ~, ~] = datevec(double(data.time(1))/3600/24 + datenum([2001,1,1,0,0,0])); % assuming that yy,mm,dd,hh of first time is correct
 ind = data.time < datetimeconv(yy, mm, dd, hh, 0, 0) | data.time > datetimeconv(yy, mm, dd, hh+1, 0, 0);
 
-test1 = sum(ind) ~= 0;
+test1 = sum(ind) ~= 0; % times were found that are not within the respective hour
 
 
 % 2. check if any dubplicate timestamps 

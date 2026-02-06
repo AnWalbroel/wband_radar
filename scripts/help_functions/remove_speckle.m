@@ -3,7 +3,7 @@ function data = remove_speckle(data)
 % First quick version.
 % RG 29.10.2020
 
-mask = any(~isnan( data.spec),3);
+mask = any(~isnan( data.spec),3);  % time-range array indicating if at least one value is not nan
 
 mask1 = repmat( mask , [1 1 max(data.DoppLen)]);
 

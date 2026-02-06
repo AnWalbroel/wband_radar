@@ -14,7 +14,7 @@ function data = read_lv0_v2(infile)
         return
     end
     
-    % filename - used leter for expections for specific files
+    % filename - used later for exceptions for specific files
     filename = split(infile,'/');
     filename = filename{end};
     
@@ -73,7 +73,7 @@ function data = read_lv0_v2(infile)
     data.T_alt(1:data.T_altcount) = single(fread(fid,[1, data.T_altcount],'single')); % temp prof altitude layers
     data.H_alt(1:data.H_altcount) = single(fread(fid,[1, data.H_altcount],'single')); % hum prof altitude layers
     data.Fr(1:data.n_levels) = int32(fread(fid,[1, data.n_levels],'int')); % range factors
-    data.DoppLen = int32(fread(fid,[1, data.no_chirp_seq],'int')); % number of samples in doppler spectra of each chirp sequence
+    data.DoppLen = int32(fread(fid,[1, data.no_chirp_seq],'int')); % number of samples (bins?) in doppler spectra of each chirp sequence
     data.range_offsets = int32(fread(fid,[1, data.no_chirp_seq],'int')) + 1; % chirp sequences start index array in altitude layer array
     data.SeqAvg = int32(fread(fid,[1, data.no_chirp_seq],'int')); % number of averaged chirps within a sequence
     data.SeqIntTime = single(fread(fid,[1, data.no_chirp_seq],'single')); % effective sequence integration time [sec]
@@ -100,7 +100,7 @@ function data = read_lv0_v2(infile)
     
     
     % for this file, the file ends before expected, stopping reading data at last full profile
-    if data.filecode == 789346 &&  strcmp(filename, 'joyrad94_20170208140002_P05_ZEN.lv0') % hopefully filemane does not chage... 
+    if data.filecode == 789346 &&  strcmp(filename, 'joyrad94_20170208140002_P05_ZEN.lv0') % hopefully filename does not change... 
         data.totsamp = 640;
     end
     
@@ -160,7 +160,7 @@ function data = read_lv0_v2(infile)
         if data.CompEna == 2
             data.KDP(1:data.totsamp,1:data.n_levels) = single(-999); % specific differential phase shift [rad/km]
             data.DiffAtt(1:data.totsamp,1:data.n_levels) = single(-999); % differential attenuation [dB/km]             
-        end % data.CompEna        
+        end % data.CompEna
     end % data.DualPol
     
     if data.CompEna > 0
@@ -171,7 +171,7 @@ function data = read_lv0_v2(infile)
     end
                     
     if data.AntiAlias == 1
-        data.Aliasmask(1:data.totsamp,1:data.n_levels) = int8(0); % data.mask array if aliasing has been applied: 0=not apllied, 1=apllied
+        data.Aliasmask(1:data.totsamp,1:data.n_levels) = int8(0); % data.mask array if aliasing has been applied: 0=not applied, 1=applied
         data.MinVel(1:data.totsamp,1:data.n_levels) = single(-999.); % minimum velocity in Doppler spectrum [m/s]
     end
     

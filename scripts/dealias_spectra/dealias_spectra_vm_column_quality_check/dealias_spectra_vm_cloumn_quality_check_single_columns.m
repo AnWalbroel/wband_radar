@@ -19,7 +19,7 @@ function [vm, correction] = dealias_spectra_vm_cloumn_quality_check_single_colum
 
 
 % ######## initial checks
-svm = size(vm);
+svm = size(vm); % (time,height)
 
 if vn(1) < 0
     vn = abs(vn);
@@ -47,22 +47,26 @@ else
 end
 
 
-dv = nanmean(diff(vm(:,1:idx)),2);
+% get mean dv
+dv = nanmean(diff(vm(:,1:idx)),2); % difference over time dimension (by default), mean over range
 
+% get peaknpise level
 noise = hildebrand_sekon(abs(dv)',1);
 
-% find all columns that have a mean difference above peaknoise level by HS
+% find all columns that have a mean difference above peaknoise level by HS -> here, we expect that dealiasing failed or jumps in Doppl velocity occurred
 idx_flag = abs(dv) > noise_fac*noise.peaknoise;
 
+
+% get start and end of blocks of adjacent abs(dv) bins that exceed the peaknoise
 [block_start, block_end] = radar_moments_get_blocks_of_signal(idx_flag,[1,numel(dv)]);
 
-dblocks = block_end - block_start + 1;
+dblocks = block_end - block_start + 1; % length of each block; blocks indicate where potentially erroneous vm were detected
 
 % get indexes where only one column has been dealiased wrongly,
 % i.e. dv is de-/increases before the column and in-/decreases
 % again after the column
 idx_col = dblocks == 2;
-idx_columns = block_end(idx_col);
+idx_columns = block_end(idx_col); % idx where only one time step with potentially wrong vm was found
 
 correction_temp = correction;
 % correct dv in all blocks
@@ -85,18 +89,18 @@ for i = 1:numel(idx_columns)
             
         else
             
-            temp_neigh = nanmean( [vm(idx_columns(i)-1,r_idx); vm(idx_columns(i)+1, r_idx)], 1 );
+            temp_neigh = nanmean( [vm(idx_columns(i)-1,r_idx); vm(idx_columns(i)+1, r_idx)], 1 ); % shape (part of range) remains
             
         end
         
         % check if values in neighbouring bin are present
         idx_value = ~isnan(temp_neigh);        
-        if sum(idx_value) < 2
+        if sum(idx_value) < 2 % why not permit one (e.g., for idx_columns(i) == 1) ? okay because more than 1 range index avail.?
             continue
         end
         
         % save indexes with signal to set interpolated values to zero
-        idx_signal = ~isnan(vm(idx_columns(i),r_idx));
+        idx_signal = ~isnan(vm(idx_columns(i),r_idx)); % at which range idx of current corrupted time index signal is present
                  
         % interpolate nighbouring velocities
         vm_neighbour = interp1( r_idx(idx_value), temp_neigh(idx_value), r_idx, 'linear','extrap');
@@ -109,15 +113,15 @@ for i = 1:numel(idx_columns)
             vm(idx_columns(i),r_idx) + corr_factor(2)*vn(ii) - vm_neighbour; ...
             vm(idx_columns(i),r_idx) + corr_factor(3)*vn(ii) - vm_neighbour;...
             vm(idx_columns(i),r_idx) + corr_factor(4)*vn(ii) - vm_neighbour;...
-            vm(idx_columns(i),r_idx) + corr_factor(5)*vn(ii) - vm_neighbour];
+            vm(idx_columns(i),r_idx) + corr_factor(5)*vn(ii) - vm_neighbour]; % shape (5,range)
         
-        % get row index with minum value, i.e. the correction
+        % get row index with minimum value, i.e. the correction
         % factor
-        [~, idx_min] = min(abs(vm_opt));
+        [~, idx_min] = min(abs(vm_opt)); % min over first dim -> range dim persists; idx_min also of shape (range)
         
         for iii = 1:numel(corr_factor)
             
-            idx_corr = idx_min == iii;
+            idx_corr = idx_min == iii; % idx_corr: only those range indices are addressed that match the current corr_factor
             % correct vm
             correction(idx_columns(i),r_idx(idx_corr)) = correction(idx_columns(i),r_idx(idx_corr)) + corr_factor(iii)*vn(ii);
             vm(idx_columns(i),r_idx(idx_corr)) = vm(idx_columns(i),r_idx(idx_corr)) + corr_factor(iii)*vn(ii);

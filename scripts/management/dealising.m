@@ -5,7 +5,7 @@ specsize = size(data.spec);
 data.AntiAlias = 2;
 
 % preallocate moments
-data.Ze = NaN(specsize(1:2));
+data.Ze = NaN(specsize(1:2));    % only time x range
 data.vm =  NaN(specsize(1:2));
 data.sigma =  NaN(specsize(1:2));
 data.skew =  NaN(specsize(1:2));
@@ -44,7 +44,7 @@ for i = 1:numel(data.time)
     % check if any data found for this time step - if not, continue with
     % next column
     if data.compress_spec
-        if ~any(~isnan(temp(:))) % if any non-nan values found, don't continue
+        if ~any(~isnan(temp(:))) % if any non-nan values found, don't continue; If there is not any non-nan value, continue.
             continue
         end
         
@@ -130,7 +130,7 @@ for i = 1:numel(data.time)
     %       velocities, i.e. dealiasing not possible anymore
     %   bit 3 (2^2) = 1: '0100' the largest values of the spectra
     %       are located close to nyquist limit -> aliasing still
-    %       likelythe column mean difference to v_m
+    %       likely. the column mean difference to v_m
     %       bins from the neighbouring column exceeds a threshold
     %       -> i.e. dealiasing routine created too high/low v_m
     %   bit 4 (2^3) = 1: the column mean difference to v_m

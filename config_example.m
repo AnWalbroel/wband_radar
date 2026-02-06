@@ -73,7 +73,7 @@ config.overwrite = 1;
 
 %Dealias:
 % true - dealiasing is applied
-% fales - dealiasing not appleied
+% false - dealiasing not applied
 config.dealias = true;
 
 %Speckle filter (optional):

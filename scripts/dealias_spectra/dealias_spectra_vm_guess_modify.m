@@ -1,7 +1,7 @@
 function vm_guess = dealias_spectra_vm_guess_modify(vm_prev_col, vn, vm_guess)
 
 % input:
-%   vm_prev_col: doppler velocities of neighbouring bin in previous
+%   vm_prev_col: doppler velocities of neighbouring bin in previous (time)
 %       column, numel(vm_prev_col) must be uneven
 %   vn: nyquist velocity
 %   vm_guess: current guessed velocity

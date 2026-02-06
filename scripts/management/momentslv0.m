@@ -49,7 +49,7 @@ else
         [config] = findoutfilename(config, files.lv0(h).name);
 
         % check if file(s) already exist
-        if ~config.overwrite % if overwrite requested, doesn't matter if files exist or not
+        if ~config.overwrite % if overwrite requested, doesnt matter if files exist or not
             
             fn = fieldnames(config.outfiles);
             fileexist = false(size(fn));

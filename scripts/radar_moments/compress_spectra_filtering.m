@@ -10,7 +10,7 @@ ss = size(spec);
 for ii = 1:ss(1)
     for jj = 1:ss(2)
         
-        if all((isnan(spec(ii,jj,:)))) % no data, no check needed
+        if all((isnan(spec(ii,jj,:)))) % no data, no check needed; doppler spectrum of current time and range gate
             continue
         end
         

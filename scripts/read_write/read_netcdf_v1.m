@@ -64,8 +64,8 @@ function data = read_netcdf_v1(infile)
     
     data.totsamp = numel(data.time);
     data.freq = 93.9997; % [GHz]
-    data.AntDia = 0.5000; % [m]
-    data.AntG = 1.4454e+05;
+    data.AntDia = 0.5000; % antenna diameter [m]
+    data.AntG = 1.4454e+05; % antenna gain
     data.DualPol = 0; % 0 = single pol radar, 1 = dual pol radar LDR conf., 2 = dual pol radar STSR mode
     data.CompEna = 0;  % spectral compression flag: 0 = not compressed, 1 = spectra compressed, 2 = spectra compressed and spectral polarimetric variables stored in the file
     data.AntiAlias = 0; % 0 = Doppler spectra are not anti-aliased, 1 = doppler spectra have been anti-aliased
@@ -87,7 +87,7 @@ function data = read_netcdf_v1(infile)
     end
     
     % set radar constant to a single value - why?
-%     data.C = data.C(1);    
+    % data.C = data.C(1);    
     
     data.readerror = false; % succesfull in reading file!    
 

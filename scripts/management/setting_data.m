@@ -1,13 +1,13 @@
 function [data] = setting_data(data, config, path)
 
-specsize = size(data.spec);
+specsize = size(data.spec);     % samples, rangegates, doppler spectrum
 
 
 % ############## add some variables
 data_fieldnames = fieldnames(data);
 
 % number of spectral averages
-data.nAvg = data.SeqAvg./data.DoppLen; % number of spectral averages
+data.nAvg = data.SeqAvg./data.DoppLen;
 
 % create velocity array
 dv = 2.*data.DoppMax./double(data.DoppLen);
@@ -69,7 +69,7 @@ if ~data.AntiAlias
     % note that the velocity array is different in every chrip sequence
     for ii = 1:data.no_chirp_seq % set MinVel to first entry of velocity
         if ii == data.no_chirp_seq
-            r_idx = data.range_offsets(ii):specsize(2);
+            r_idx = data.range_offsets(ii):specsize(2);  % range indices of current chirp sequence
         else
             r_idx = data.range_offsets(ii):data.range_offsets(ii+1);
         end

@@ -13,7 +13,8 @@ if ~any(data.spec(:) > 10^(50/10))
 else
 
     % find profile with bad data
-    indout = any(any(data.spec > 10^(50/10), 3)');
+    indout = any(any(data.spec > 10^(50/10), 3)'); % first, over last (3rd) dimension, then over the first dim of the transposed => 2nd dim of data.spec
+    % thus, finds time indices where Ze is bullshit
 
 
     % loop over fieldnames of data
@@ -38,7 +39,7 @@ else
 
             switch length(size(data.(fn{k}))) % remove bad entry on time dimensions
 
-                case 1
+                case 1  % 1 dimensional data
                     data.(fn{k})(indout) = [];
 
                 case 2

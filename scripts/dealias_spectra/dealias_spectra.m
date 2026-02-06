@@ -52,7 +52,7 @@ function [spec_out,vel_out,moments,alias_flag,status_flag] = ...
 %                      1 - dual pol radar LDR conf., 
 %                      2 - dual pol radar STSR mode (dealiasing not
 %                      programmed yet - July 20190
-%       varargin{14} = spectra for horisontally received polarisation, when
+%       varargin{14} = spectra for horizontally received polarisation, when
 %                      DualPol == 1
 %       varargin{15} = real part of the covariance spectrum, when DualPol == 2
 %       varargin{16} = imaginary part of the covariance spectrum, when
@@ -134,12 +134,12 @@ end
 
 % check if there is data
 if flag_compress_spec
-    if ~any(~isnan(spec(:))) % if any non-nan values found, don't continue
+    if ~any(~isnan(spec(:))) % if not any nonnan values are found, don't continue
         return
     end
 
 else
-    if all(isnan(spec(:,1)))
+    if all(isnan(spec(:,1)))  % is it then assumed that no aliasing occurred because no peaks were identified at edge of Doppler spectrum?
         return
     end
 end
@@ -191,17 +191,17 @@ end
 
 vel_out = NaN(ss);
 
-if sv(2) > 1 
+if sv(2) > 1 % if number of chrips is > 1:
     for ii = 1:ss(1)
         % get chirp indexes for each range gate
          r_idx = dealias_spectra_get_range_index(range_offsets, ii);
-         vel_out(ii,:) = vel(:,r_idx)'; % Doppler velocity array for each spectra
+         vel_out(ii,:) = vel(:,r_idx)'; % Doppler velocity array for each spectra; vel_out has dims (range, Doppler spectrum)
     end
 end
 
 
 % initialize flag
-status_flag = zeros(ss(1),1); % if aliasing could be perform properliy
+status_flag = zeros(ss(1),1); % if aliasing could be performed properly
 status_flag = dec2bin(status_flag,4); % convert to three binary string
 
 % ############### get Nfft
@@ -255,11 +255,11 @@ for i = 1:numel(cbh_fin)
     
     
     % write to output struct
-    if no_clean_signal == false && ~noalias_flag
+    if no_clean_signal == false && ~noalias_flag % there is a clean signal & there is aliasing in this cloud layer
         
         moments = dealias_spectra_write_tempmoments_to_finalmoments(moments, tempstruct, idx_0, moment_string);
 
-    else % no non-dealiased singal was found, or no aliasing in this layer; calculate moments for all bins
+    else % no non-dealiased (clean) singal was found, or no aliasing in this layer; calculate moments for all range bins in this cloud
         
         for ii = cbh_fin(i):cth_fin(i)
                         

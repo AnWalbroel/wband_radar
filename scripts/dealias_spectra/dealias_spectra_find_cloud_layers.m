@@ -1,6 +1,6 @@
 function [cbh_fin, cth_fin] = dealias_spectra_find_cloud_layers(spec, range_offsets, dr, max_dis, flag_compress_spec)
 
-% this function determins the number of cloud layers. the maximum distance
+% this function determines the number of cloud layers. the maximum distance
 % between two bins is allowed to be max_dis. if the distance is larger,
 % then the bins are considered to belong to two separate layers
 %
@@ -19,7 +19,7 @@ function [cbh_fin, cth_fin] = dealias_spectra_find_cloud_layers(spec, range_offs
 ss = size(spec);
 
 % find cloud layers
-signal = zeros(ss(1),1);
+signal = zeros(ss(1),1);  % whether there is at least 1 signal in a range gate
 
 if flag_compress_spec
     signal( any( ~isnan(spec), 2) ) = 1;
@@ -50,11 +50,11 @@ end
 
 
 % compare cth(i+1) and cbh(i) to estimate the gap, i.e. if there is just a
-% few meters missing
-temp = numel(cth)-1;
-dlayers = zeros(temp,1);
-for i = 1:temp
-    if cbh(i) < range_offsets(2)
+% few meters missing <<-- wrong comment? it's cbh(i+1) and cth(i), right?
+temp = numel(cth)-1; % number of gaps between clouds
+dlayers = zeros(temp,1); % will contain the distance between cloud layers
+for i = 1:temp % loop over number of cloud layers
+    if cbh(i) < range_offsets(2) % not cbh(i+1)??
         dlayers(i) = (cbh(i+1) - cth(i))*dr(1);    
     elseif cbh(i) < range_offsets(3)
         dlayers(i) = (cbh(i+1) - cth(i))*dr(2);  
@@ -70,11 +70,12 @@ i = 1;
 cc = 1;
 while i <= temp
     idx = find(dlayers(i:end) > max_dis,1,'first') + i - 1; % find next layer, i.e. cbh and cth must differ by more than max_dis m
+    % if distance between two cloud layers is < max_dis, it's assumed they belong together
     if i == 1 && isempty(idx) % then it is just one cloud
         cbh_fin(cc) = cbh(1);
         cth_fin(cc) = cth(end);
         i = temp+1;
-    elseif isempty(idx) % all follwing layers are one layer
+    elseif isempty(idx) % all following layers are one layer
         cbh_fin(cc) = cbh(i);
         cth_fin(cc) = cth(end);
         i = temp+1;

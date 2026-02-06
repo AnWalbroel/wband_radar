@@ -42,8 +42,7 @@ idx = length(range);
 % ############# correct single columns that were wrongly dealiased
 [vm, correction] = dealias_spectra_vm_cloumn_quality_check_single_columns(vm , vn, idx, noise_fac, correction, varargin{:});
 
-% ############ correct blocks with two adjacent columns that were dealiased
-% wrongly
+% ############ correct blocks with two adjacent columns that were wrongly dealiased
 [vm, correction] = dealias_spectra_vm_cloumn_quality_check_double_columns(vm , vn, idx, noise_fac, correction, varargin{:});
 
 % ########## correct rest of columns

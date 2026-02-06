@@ -90,7 +90,7 @@ if ~any(diff(double(data.time) + double(data.sampleTms).*1e-3) <= 0 )
 end
 
 
-%% for dublicate time stamp: move the second of the duplicates to be 
+%% for duplicate time stamp: move the second of the duplicates to be 
 % half way between previous and next one
 
 timestamp = double(data.time) + double(data.sampleTms).*1e-3;
@@ -102,7 +102,7 @@ for tt = ind
         add_time = time_res;
         
     else
-        % calculate mean of duplicate and next time stamp after dubplicate stamp
+        % calculate mean of duplicate and next time stamp after duplicate stamp
         add_time = (timestamp(tt+1) - timestamp(tt-1)) / 2;
         add_time = min(add_time, time_res); % don't add more than the temporal resolution
     end
@@ -148,7 +148,7 @@ function data = correct_backward_jump(data, timestamp, time_res)
         ind( diff(ind) < 5 ) = [];
     end
 
-    for tt = ind
+    for tt = ind  % tt: index of current backward jump
 
         figure, plot(timestamp, '.'), xlim([tt-20, tt+10]), hold on
 
@@ -162,7 +162,7 @@ function data = correct_backward_jump(data, timestamp, time_res)
 
         %  where time stamp within +- 0.3 sec from testtime
         ix_close = abs(testtime - flip(timestamp(1:tt))) < 0.3;    
-        ix = find(ix_close, 1); % find first ocurrence
+        ix = find(ix_close, 1); % find first ocurrence where time stamp aligns again
 
         % found possible match going backwards:
         % criteria 1: a match found in the past 
@@ -172,13 +172,13 @@ function data = correct_backward_jump(data, timestamp, time_res)
         %
         % -> consider that found the corresponding forward jump -
 
-        if ~isempty(ix) && (timestamp(tt-ix+2)-timestamp(tt-ix+1)) > time_res+0.3
+        if ~isempty(ix) && (timestamp(tt-ix+2)-timestamp(tt-ix+1)) > time_res+0.3  % second point: forward jump was detected in original time axis
 
             new_time =  flip(testtime(1:ix-1)); % time to be filled in
 
             ix_ed = (tt-ix+2:tt); % index of original time array to be edited
 
-            data.timeshift(ix_ed) =  data.timeshift(ix_ed) + ... % calculate cumulatively, since possible that same time stamp gets modified more than once
+            data.timeshift(ix_ed) = data.timeshift(ix_ed) + ... % calculate cumulatively, since possible that same time stamp gets modified more than once
                 new_time - ( double(data.time(ix_ed)) + double(data.sampleTms(ix_ed)).*1e-3 );
 
             data.time(ix_ed) = floor(new_time);
@@ -270,7 +270,7 @@ end % function
 function data = special_case(data, timestamp, ind_out)
 
     ind = false(size(timestamp));
-    ind(ind_out) = 1;
+    ind(ind_out) = 1;   % True (==1) where time has problem?
 
     figure, plot(timestamp, '.'), xlim([find(ind,1)-20, find(ind,1,'last')+20]), hold on
 

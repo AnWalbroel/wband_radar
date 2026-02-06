@@ -25,7 +25,7 @@ if flag_compress_spec
     
     % number of data points above median within v(1)/v(end) -+v_n/2
     idx = find( spec > median(spec) );
-    idx_inside = idx < ss(2)/4 | idx > 3/4*ss(2);
+    idx_inside = idx < ss(2)/4 | idx > 3/4*ss(2); % whether spec is > median at boundary of doppler spectrum
 
 else
 
@@ -44,10 +44,10 @@ else
 
 end
 
-% calculate fraction of how mmany percents fall into v(1)/v(end) -+v_n/2
+% calculate fraction of how mmany percents fall into v(1)/v(end) -+v_n/2 --> (v(1) + v_n/2 and v(end) - v_n/2??)
 frac = sum(idx_inside)/sum(idx_signal);
 
-if frac > 0.8 % then more than 80 % of the largest 50 % are located at the edge
+if frac > 0.8 % then more than 80 % of the largest 50 % (or of compressed signal above median) are located at the edge
     alias_flag = 1;
 end
 

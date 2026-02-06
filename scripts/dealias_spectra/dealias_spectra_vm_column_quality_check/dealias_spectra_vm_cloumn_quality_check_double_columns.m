@@ -19,7 +19,7 @@ function [vm, correction] = dealias_spectra_vm_cloumn_quality_check_double_colum
 
 
 % ######## initial checks
-svm = size(vm);
+svm = size(vm); % (time,range)
 
 if vn(1) < 0
     vn = abs(vn);
@@ -47,39 +47,36 @@ else
 end
 
 
-% ########## get mean dv
+% get mean dv
 dv = nanmean(diff(vm(:,1:idx)),2);
 
-
-% ########## get peaknpise level
+% get peaknpise level
 noise = hildebrand_sekon(abs(dv)',1);
 
-
-% ########## find all columns that have a mean difference above peaknoise level by HS
+% find all columns that have a mean difference above peaknoise level by HS
 idx_flag = abs(dv) > noise_fac*noise.peaknoise;
 
 
-% ########## get start and end of blocks of adjacent abs(dv) bins that exceed the peaknoise
+% get start and end of blocks of adjacent abs(dv) bins that exceed the peaknoise
 [block_start, block_end] = radar_moments_get_blocks_of_signal(idx_flag,[1,numel(dv)]);
-% get size of blocks
-block_size = block_end - block_start + 1;
-block_distance = [block_start(2:end) - block_end(1:end-1), NaN];
+
+block_size = block_end - block_start + 1; % get size of blocks
+block_distance = [block_start(2:end) - block_end(1:end-1), NaN]; % gaps between erroneous vm
 n_blocks = numel(block_start);
 
 
-% ######### get indexes where two peaks are sparated by only one bin -> double column
-
+% get indexes where two peaks are sparated by only one bin -> double column
 idx_columns = NaN(1,n_blocks);
 if block_distance(1) == 2 && block_distance(2) > 3 && ...
             block_size(1) == 1 && block_size(2) == 1
-        idx_columns(1) = block_start(1);
+        idx_columns(1) = block_start(1);   % to handle the first two-col corrupted time index
 end
 
 i = 2;
 while i < n_blocks
     
     if block_distance(i) == 2 && block_distance(i-1) > 3 && block_distance(i+1) > 3 && ...
-            block_size(i) == 1 && block_size(i+1) == 1
+            block_size(i) == 1 && block_size(i+1) == 1 % block size to determine whether that's a good idx_flag boundary
         
         idx_columns(i) = block_start(i) + 1;
         i = i + 2;
@@ -89,7 +86,7 @@ while i < n_blocks
 end
 
 % get rid of NaN
-idx_columns = idx_columns(~isnan(idx_columns));
+idx_columns = idx_columns(~isnan(idx_columns)); % e.g., remove those where one or at least three cols are erroneous
 
 correction_temp = correction;
 

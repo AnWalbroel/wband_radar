@@ -21,7 +21,7 @@ fields = fieldnames(tempstruct);
 for ff = 1:length(fields)
    
    ss = size(tempstruct.(fields{ff}));
-   if ss(1) == length(idx_0)
+   if ss(1) == length(idx_0) % should have length == 1 ?
        nn = ss(2);
    else
        nn = ss(1);

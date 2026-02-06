@@ -177,7 +177,7 @@ function data = read_lv0_v3(infile)
     data.RHprof(1:data.totsamp,1:data.H_altcount) = single(-999); % rel hum profile
     data.PNv(1:data.totsamp,1:data.n_levels) = single(-999); % total IF power in v-pol measured at the ADC input
     data.SLv(1:data.totsamp,1:data.n_levels) = single(-999); % linear sensitivity limit in Ze units for vertical polarisation
-    data.spec(1:data.totsamp,1:data.n_levels,1:max(data.DoppLen)) =  NaN('single'); % vertical pol doppler spectrum linear units % filling with NaNs instead of -999 to avoid having to convert missing values to NaNs later
+    data.spec(1:data.totsamp,1:data.n_levels,1:max(data.DoppLen)) = NaN('single'); % vertical pol doppler spectrum linear units % filling with NaNs instead of -999 to avoid having to convert missing values to NaNs later
     if data.DualPol > 0
         data.PNh(1:data.totsamp,1:data.n_levels) = single(-999); % total IF power in h-pol measured at ADT unput
         data.SLh(1:data.totsamp,1:data.n_levels) = single(-999); % linear sensitivity limit in Ze units for horizontal polarisation
@@ -277,8 +277,6 @@ function data = read_lv0_v3(infile)
         for j = 1:data.n_levels
                         
             if data.mask(i,j) == 1
-                
-
                 
                 fread(fid,1,'int'); % number of bytes of the followng spectral block
                 

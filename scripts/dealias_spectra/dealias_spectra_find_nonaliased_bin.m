@@ -12,12 +12,12 @@ function [tempstruct, no_clean_signal, idx_0] = dealias_spectra_find_nonaliased_
 %   idx_0: index of range bin where the first clean signal was found
 
 leave = false;
-n_cloudbins = cth_fin-cbh_fin + 1;
+n_cloudbins = cth_fin-cbh_fin + 1; % range indices covered by current cloud layer
 cc = 0;
 no_clean_signal = false;
 idx_0 = NaN;
 
-signal = zeros( 1, length(spec(:,1)) );
+signal = zeros( 1, length(spec(:,1)) );   % spec.shape = (range, doppler spectrum)
 if flag_compress_spec
     signal( any( ~isnan(spec), 2) ) = 1;
 
@@ -29,8 +29,7 @@ end
 while leave == false && cc < n_cloudbins && no_clean_signal == false % look until non-aliased bin with signal after radar_moments.m is found
     % now start on top and find first column with signal that doesn't have
     % aliasing
-%     idx_0 = find(alias_flag(cbh_fin:cth_fin-cc) == 0 & ~isnan(spec(cbh_fin:cth_fin-cc,1)),1,'last') + cbh_fin - 1;
-    idx_0 = find(alias_flag(cbh_fin:cth_fin-cc) == 0 & signal(cbh_fin:cth_fin-cc)', 1,'last') + cbh_fin - 1;
+    idx_0 = find(alias_flag(cbh_fin:cth_fin-cc) == 0 & signal(cbh_fin:cth_fin-cc)', 1,'last') + cbh_fin - 1; % py: ([cbh_fin:cth_fin+1-cc] ...) + cbh_fin
     
     if isempty(idx_0) % dealiasing not possible in the whole layer
         no_clean_signal = true;
@@ -41,7 +40,7 @@ while leave == false && cc < n_cloudbins && no_clean_signal == false % look unti
     % calculate moments for this range gate
 %     Nfft = sum(~isnan(spec(idx_0,:)));
     
-    % get range indexes
+    % get range indexes (chirp number of range gate idx_0)
     r_idx = dealias_spectra_get_range_index(range_offsets, idx_0);
     
     tempnoise.meannoise = noise.meannoise(idx_0);
@@ -54,8 +53,8 @@ while leave == false && cc < n_cloudbins && no_clean_signal == false % look unti
     
     if isnan(tempstruct.vm) % no significant signal was detected by radar_moments.m
         % write moment to output in case they are not dealiased
-        cc = cc + 1;
-    else
+        cc = cc + 1; % look a bit deeper in the cloud (started at cloud top, now one bin closer to radar)
+    else % then, a nice mean doppler velocity usable as dealiasing base was found
         leave = true;
     end
 end % while
