@@ -1,4 +1,3 @@
-Original: https://github.com/igmk/w-radar
 
 This Matlab program reads data recorded with the FMCW-radar of RPG. RPG 
 stores the data in binary format. The program converts it into netcdf4 
@@ -289,7 +288,7 @@ spectra the noise floor is calculated by Hidebrand-Sekhon, 1974.
 - Checking aliasing for polarimetric radar configuration. Check is not done for 
   the cross polar spectrum.
 - If no dealiasing is found the moments are calculated from the spectra and the 
-  program continuous with the next spectrogram.
+  program continues with the next spectrogram.
           
 ### iii) Identify cloud layers
 
