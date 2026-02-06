@@ -13,10 +13,6 @@ function data = read_lv0_v3(infile)
         disp(['>>> error opening' infile])
         return
     end
-    if (contains(infile, '240816_190000_P00_ZEN.LV0') || contains(infile, '240901_203753_P08_ZEN')) && contains(infile, 'vampire')
-        disp(['>>> error opening' infile])
-        return
-    end
     
     %%%%%%%%%%%%%%% read header information %%%%%%%%%%%%%%%%
     
