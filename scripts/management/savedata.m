@@ -112,11 +112,41 @@ function write_ac3(data, config)
     
     disp(['Writing file ' config.outfiles.file1])
     write_data_2_nc_moments(data, config.outfiles.file1, config);
-        
+    
     disp(['Writing file ' config.outfiles.file2])
     write_data_2_nc_spectra(data, config.outfiles.file2, config);
-     
+    
     disp(['Writing file ' config.outfiles.file3])
     write_data_2_nc_housekeep(data, config.outfiles.file3, config);
+    
+end % function
+
+
+
+function write_ac3_grawac(data, config)
+    % write output files for ac3 data set
+    % including polarimetric variables
+    % AW 2026-02-16
+    
+    if data.DualPol > 0
+        disp(['Writing file ' config.outfiles.file1])
+        write_data_2_nc_moments_pol(data, config.outfiles.file1, config);
+
+        disp(['Writing file ' config.outfiles.file2])
+        write_data_2_nc_spectra_pol(data, config.outfiles.file2, config);
+        
+        disp(['Writing file ' config.outfiles.file3])
+        write_data_2_nc_housekeep_pol(data, config.outfiles.file3, config);
+
+    else
+        disp(['Writing file ' config.outfiles.file1])
+        write_data_2_nc_moments(data, config.outfiles.file1, config);
+
+        disp(['Writing file ' config.outfiles.file2])
+        write_data_2_nc_spectra(data, config.outfiles.file2, config);
+        
+        disp(['Writing file ' config.outfiles.file3])
+        write_data_2_nc_housekeep(data, config.outfiles.file3, config);
+    end
     
 end % function
