@@ -317,7 +317,14 @@ flag_aggregate = ac3_aggregate_flag(data);
 netcdf.putVar(ncid,id_QF,0,data.totsamp,flag_aggregate);
 
 % % multidimensional variables
-
+if any(data.VNoisePow_mean == 0, 'all')
+    data.VNoisePow_mean(data.VNoisePow_mean == 0) = NaN;
+    disp(("WARNING: " + outfile + " contains VNoisePow_mean == 0. Were set to NaN."))
+end
+if any(data.VNoisePow_peak == 0, 'all')
+    data.VNoisePow_peak(data.VNoisePow_peak == 0) = NaN;
+    disp(("WARNING: " + outfile + " contains VNoisePow_peak == 0. Were set to NaN."))
+end
 netcdf.putVar(ncid,id_VNoisePow_mean,[0,0],[data.n_levels,data.totsamp],10.*log10(data.VNoisePow_mean'));
 netcdf.putVar(ncid,id_VNoisePow_peak,[0,0],[data.n_levels,data.totsamp],10.*log10(data.VNoisePow_peak'));
 if isfield(data, 'SLv')
