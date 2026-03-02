@@ -293,6 +293,18 @@ netcdf.putVar(ncid,id_skew,[0,0],[data.n_levels,data.totsamp],data.skew');
 netcdf.putVar(ncid,id_kurt,[0,0],[data.n_levels,data.totsamp],data.kurt');
 
 if data.DualPol > 0
+    if any(data.LDR <= 0, 'all')
+        data.LDR(data.LDR <= 0) = NaN;
+        disp(("WARNING: " + outfile + " contains LDR <= 0. Were set to NaN."))
+    end
+    if any(isinf(data.LDR), 'all')
+        data.LDR(isinf(data.LDR)) = NaN;
+        disp(("WARNING: " + outfile + " contains LDR == inf. Were set to NaN."))
+    end
+    if any(isinf(data.vm_hv), 'all')
+        data.vm_hv(isinf(data.vm_hv)) = NaN;
+	disp(("WARNING: " + outfile + " contains vm_hv == inf. Were set to NaN."))
+    end
     netcdf.putVar(ncid,id_ldr,[0,0],[data.n_levels,data.totsamp],10.*log10(data.LDR'));
     netcdf.putVar(ncid,id_Ze_hv,[0,0],[data.n_levels,data.totsamp],10.*log10(data.Ze_hv'));
     netcdf.putVar(ncid,id_vm_hv,[0,0],[data.n_levels,data.totsamp],data.vm_hv');
