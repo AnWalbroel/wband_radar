@@ -219,13 +219,13 @@ if data.DualPol > 0
     netcdf.putAtt(ncid,id_HNoisePow_mean,'long_name','Doppler spectrum mean noise horizontal channel');
     netcdf.putAtt(ncid,id_HNoisePow_mean,'units','dB');
     netcdf.defVarFill(ncid,id_HNoisePow_mean,false,NaN('single'))
-    netcdf.putAtt(ncid,id_HNoisePow_mean,'comment','Calculated from the Doppler spectra following Hildebrand and Sekhon, 1974. If a calibration correction has been applied, it is included in hmean_noise, and the value is given by variable ze_calibration.');
+    netcdf.putAtt(ncid,id_HNoisePow_mean,'comment','Calculated from the Doppler spectra following Hildebrand and Sekhon, 1974.');
     
     id_HNoisePow_peak = netcdf.defVar(ncid,'hpeak_noise','nc_float',[did_height,did_time]);
     netcdf.putAtt(ncid,id_HNoisePow_peak,'long_name','Doppler spectrum peak noise horizontal channel');
     netcdf.putAtt(ncid,id_HNoisePow_peak,'units','dB');
     netcdf.defVarFill(ncid,id_HNoisePow_peak,false,NaN('single'))
-    netcdf.putAtt(ncid,id_HNoisePow_peak,'comment','Calculated from the Doppler spectra following Hildebrand and Sekhon, 1974. If a calibration correction has been applied, it is included in hpeak_noise, and the value is given by variable ze_calibration.');
+    netcdf.putAtt(ncid,id_HNoisePow_peak,'comment','Calculated from the Doppler spectra following Hildebrand and Sekhon, 1974.');
     if isfield(data, 'SLh')
         id_SLh = netcdf.defVar(ncid,'noise_threshold_cross','nc_float',[did_height,did_time]);
         netcdf.putAtt(ncid,id_SLh,'long_name','cross-polarization signal strength threshold used for data logging');
