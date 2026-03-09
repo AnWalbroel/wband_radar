@@ -107,10 +107,17 @@ elseif idx_compress == false && isempty(idx_range_offsets)
     
     
     if flag_DualPol > 0 
-        tempoutput =  radar_moments_from_spectra(spec_hv, velocity, nAvg, varargin{:});
+        noise_varargin_idx = find(strcmp(varargin, 'noise'));
+        all_varargs = ones(size(varargin));
+        if ~isempty(noise_varargin_idx)
+            all_varargs([noise_varargin_idx,noise_varargin_idx+1]) = 0;
+        end
+        tempoutput =  radar_moments_from_spectra(spec_hv, velocity, nAvg, varargin{all_varargs == 1});
         
         output.Ze_hv = tempoutput.Ze;
         output.vm_hv = tempoutput.vm;
+        output.hmeannoise = tempoutput.meannoise;
+        output.hpeaknoise = tempoutput.peaknoise;
         
     end
     
@@ -123,10 +130,19 @@ elseif idx_compress == false && ~isempty(idx_range_offsets)
         tempvarargin = varargin;
         ix = find(strcmp(varargin, 'moment_str'));
         tempvarargin{ix + 1} = 'vm';
-        tempoutput =  radar_moments_from_spectra_and_different_chrip_seq(spec_hv, velocity, nAvg, tempvarargin{:});    
+
+        noise_varargin_idx = find(strcmp(tempvarargin, 'noise'));
+        all_varargs = ones(size(tempvarargin));
+        if ~isempty(noise_varargin_idx)
+            all_varargs([noise_varargin_idx,noise_varargin_idx+1]) = 0;
+        end
+
+        tempoutput =  radar_moments_from_spectra_and_different_chrip_seq(spec_hv, velocity, nAvg, tempvarargin{all_varargs == 1});
         
         output.Ze_hv = tempoutput.Ze;
         output.vm_hv = tempoutput.vm;
+        output.hmeannoise = tempoutput.meannoise;
+        output.hpeaknoise = tempoutput.peaknoise;
         
     end
     

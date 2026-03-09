@@ -214,11 +214,24 @@ if isfield(data, 'SLv')
     id_SLv = defh.SLv(ncid, did_height, did_time);
 end
 
-if data.DualPol > 0 && isfield(data, 'SLh')
-    id_SLh = netcdf.defVar(ncid,'noise_threshold_cross','nc_float',[did_height,did_time]);
-    netcdf.putAtt(ncid,id_SLh,'long_name','cross-polarization signal strength threshold used for data logging');
-    netcdf.putAtt(ncid,id_SLh,'units','mm6/m3');
-    netcdf.defVarFill(ncid,id_SLh,false,NaN('single'))
+if data.DualPol > 0
+    id_HNoisePow_mean = netcdf.defVar(ncid,'hmean_noise','nc_float',[did_height,did_time]);
+    netcdf.putAtt(ncid,id_HNoisePow_mean,'long_name','Doppler spectrum mean noise horizontal channel');
+    netcdf.putAtt(ncid,id_HNoisePow_mean,'units','dB');
+    netcdf.defVarFill(ncid,id_HNoisePow_mean,false,NaN('single'))
+    netcdf.putAtt(ncid,id_HNoisePow_mean,'comment','Calculated from the Doppler spectra following Hildebrand and Sekhon, 1974. If a calibration correction has been applied, it is included in hmean_noise, and the value is given by variable ze_calibration.');
+    
+    id_HNoisePow_peak = netcdf.defVar(ncid,'hpeak_noise','nc_float',[did_height,did_time]);
+    netcdf.putAtt(ncid,id_HNoisePow_peak,'long_name','Doppler spectrum peak noise horizontal channel');
+    netcdf.putAtt(ncid,id_HNoisePow_peak,'units','dB');
+    netcdf.defVarFill(ncid,id_HNoisePow_peak,false,NaN('single'))
+    netcdf.putAtt(ncid,id_HNoisePow_peak,'comment','Calculated from the Doppler spectra following Hildebrand and Sekhon, 1974. If a calibration correction has been applied, it is included in hpeak_noise, and the value is given by variable ze_calibration.');
+    if isfield(data, 'SLh')
+        id_SLh = netcdf.defVar(ncid,'noise_threshold_cross','nc_float',[did_height,did_time]);
+        netcdf.putAtt(ncid,id_SLh,'long_name','cross-polarization signal strength threshold used for data logging');
+        netcdf.putAtt(ncid,id_SLh,'units','mm6/m3');
+        netcdf.defVarFill(ncid,id_SLh,false,NaN('single'))
+    end
 end
 
 if isfield(data, 'std_noise') % from RPG software version 1
@@ -277,8 +290,12 @@ end
 netcdf.defVarDeflate(ncid,id_slow,true,true,5);
 netcdf.defVarDeflate(ncid,id_fast,true,true,5);
 
-if data.DualPol > 0 && isfield(data, 'SLh')
-    netcdf.defVarDeflate(ncid,id_SLh,true,true,5);
+if data.DualPol > 0
+    netcdf.defVarDeflate(ncid,id_HNoisePow_mean,true,true,5);
+    netcdf.defVarDeflate(ncid,id_HNoisePow_peak,true,true,5);
+    if isfield(data, 'SLh')
+        netcdf.defVarDeflate(ncid,id_SLh,true,true,5);
+    end
 end
 
 
@@ -330,9 +347,23 @@ netcdf.putVar(ncid,id_VNoisePow_peak,[0,0],[data.n_levels,data.totsamp],10.*log1
 if isfield(data, 'SLv')
     netcdf.putVar(ncid,id_SLv,[0,0],[data.n_levels,data.totsamp],data.SLv');
 end
-if data.DualPol > 0 && isfield(data, 'SLh')
-    netcdf.putVar(ncid,id_SLh,[0,0],[data.n_levels,data.totsamp],data.SLh');
+
+if data.DualPol > 0
+    if any(data.HNoisePow_mean == 0, 'all')
+        data.HNoisePow_mean(data.HNoisePow_mean == 0) = NaN;
+        disp(("WARNING: " + outfile + " contains HNoisePow_mean == 0. Were set to NaN."))
+    end
+    if any(data.HNoisePow_peak == 0, 'all')
+        data.HNoisePow_peak(data.HNoisePow_peak == 0) = NaN;
+        disp(("WARNING: " + outfile + " contains HNoisePow_peak == 0. Were set to NaN."))
+    end
+    netcdf.putVar(ncid,id_HNoisePow_mean,[0,0],[data.n_levels,data.totsamp],10.*log10(data.HNoisePow_mean'));
+    netcdf.putVar(ncid,id_HNoisePow_peak,[0,0],[data.n_levels,data.totsamp],10.*log10(data.HNoisePow_peak'));
+    if isfield(data, 'SLh')
+        netcdf.putVar(ncid,id_SLh,[0,0],[data.n_levels,data.totsamp],data.SLh');
+    end
 end
+
 if isfield(data, 'std_noise') % from RPG software version 1
     netcdf.putVar(ncid,id_NStd,[0,0],[data.no_chirp_seq,data.totsamp],(data.std_noise'));
 end

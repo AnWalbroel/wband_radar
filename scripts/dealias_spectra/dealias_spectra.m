@@ -173,6 +173,10 @@ if flag_DualPol > 0
     moments.Ze_hv = NaN(ss(1),1);
     moments.vm_hv = NaN(ss(1),1);
     moments.LDR =  NaN(ss(1),1);
+    if ~flag_compress_spec
+        moments.hmeannoise = NaN(ss(1),1);
+        moments.hpeaknoise = NaN(ss(1),1);
+    end
 end
 
 if flag_DualPol == 2

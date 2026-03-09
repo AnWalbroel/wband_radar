@@ -303,7 +303,7 @@ if data.DualPol > 0
     end
     if any(isinf(data.vm_hv), 'all')
         data.vm_hv(isinf(data.vm_hv)) = NaN;
-	disp(("WARNING: " + outfile + " contains vm_hv == inf. Were set to NaN."))
+        disp(("WARNING: " + outfile + " contains vm_hv == inf. Were set to NaN."))
     end
     netcdf.putVar(ncid,id_ldr,[0,0],[data.n_levels,data.totsamp],10.*log10(data.LDR'));
     netcdf.putVar(ncid,id_Ze_hv,[0,0],[data.n_levels,data.totsamp],10.*log10(data.Ze_hv'));

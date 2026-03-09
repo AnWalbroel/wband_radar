@@ -15,6 +15,10 @@ if data.DualPol > 0
     data.LDR = NaN(specsize(1:2));
     data.Ze_hv = NaN(specsize(1:2));
     data.vm_hv = NaN(specsize(1:2));
+    if ~data.compress_spec
+        data.HNoisePow_mean = NaN(specsize(1:2));
+        data.HNoisePow_peak = NaN(specsize(1:2));
+    end
 end
 
 if data.DualPol == 2
@@ -156,6 +160,10 @@ for i = 1:numel(data.time)
         data.LDR(i,:) = tempmoments.LDR';
         data.Ze_hv(i,:) = tempmoments.Ze_hv';
         data.vm_hv(i,:) = tempmoments.vm_hv';
+        if ~data.compress_spec
+            data.HNoisePow_mean(i,:) = tempmoments.hmeannoise';
+            data.HNoisePow_peak(i,:) = tempmoments.hpeaknoise';
+        end
     end 
     
     if data.DualPol == 2
