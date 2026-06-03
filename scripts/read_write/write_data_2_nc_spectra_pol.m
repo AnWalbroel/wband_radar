@@ -1,4 +1,4 @@
-function write_data_2_nc_spectra(data,outfile, config)
+function write_data_2_nc_spectra_pol(data,outfile, config)
 % function to write Doppler spectra and related metadata into netcdf4 file
 % RG 1.6.2022
 
