@@ -195,7 +195,7 @@ end
 
 vel_out = NaN(ss);
 
-if sv(2) > 1 
+if sv(2) >= 1 
     for ii = 1:ss(1)
         % get chirp indexes for each range gate
          r_idx = dealias_spectra_get_range_index(range_offsets, ii);
