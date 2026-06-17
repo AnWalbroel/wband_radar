@@ -14,6 +14,11 @@ config.outputpath_tree = fullfile(config.outputpath, yyyy, mm, dd);
 path.lv0 = fullfile(config.datapath, yyyy, mm, dd);
 files.lv0 = dir(fullfile(path.lv0, config.filetype));
 
+if isempty(files.lv0)
+    config.filetype = strrep(config.filetype, 'lv0', 'LV0');
+    files.lv0 = dir(fullfile(path.lv0, config.filetype));
+end
+
 %First, try to find binary data
 if isempty(files.lv0)
     fprintf('%s: files not found.', fullfile(path.lv0, config.filetype))
