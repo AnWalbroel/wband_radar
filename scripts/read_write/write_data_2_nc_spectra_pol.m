@@ -315,6 +315,9 @@ if sw_as_string
 else
     netcdf.putVar(ncid,id_swv,str2double(data.radarsw));
 end
+if isfield(data, 'Ze_corr') && data.Ze_corr ~= 0
+    netcdf.putVar(ncid,id_ZeCalib,data.Ze_corr);
+end
 
 % range dependet
 % netcdf.putVar(ncid,id_range,0,data.n_levels,data.range); DON'T INCLUDE
