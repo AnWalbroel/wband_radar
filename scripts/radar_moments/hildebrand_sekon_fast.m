@@ -44,7 +44,7 @@ output.signal_detected = false(s(1),1);
 for ii = 1:savg(2)
     
     npts = 1:N(ii);
-    r_idx = range_offsets(ii):range_offsets(ii+1);
+    r_idx = range_offsets(ii):range_offsets(ii+1)-1;
     
     sortSpec = sort(spec(r_idx,npts),2);
     sumsum = cumsum(sortSpec,2).^2;
