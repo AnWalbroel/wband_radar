@@ -37,7 +37,7 @@ else
         if i == data.no_chirp_seq
             r_idx = data.range_offsets(i):specsize(2);
         else
-            r_idx = data.range_offsets(i):data.range_offsets(i+1);
+            r_idx = data.range_offsets(i):data.range_offsets(i+1)-1;
         end            
         data.VNoisePow_mean(:,r_idx) = data.VNoisePow_mean(:,r_idx)./single(data.DoppLen(i));
         if data.DualPol > 0                
