@@ -71,7 +71,7 @@ if ~data.AntiAlias
         if ii == data.no_chirp_seq
             r_idx = data.range_offsets(ii):specsize(2);
         else
-            r_idx = data.range_offsets(ii):data.range_offsets(ii+1);
+            r_idx = data.range_offsets(ii):data.range_offsets(ii+1)-1;
         end
         data.MinVel(:,r_idx) = data.velocity(ii,1);
     end
