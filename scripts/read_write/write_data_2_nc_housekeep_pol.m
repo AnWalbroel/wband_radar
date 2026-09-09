@@ -608,10 +608,6 @@ if Hum_ret_flag
     netcdf.putAtt(ncid,id_rhprof,'rpg_name','RHPr');
 end
 
-if data.DualPol > 0
-    disp('WARMING!!! No polarimetric variables included in the output files')
-end
-
 
 %% ###################### compression
 
