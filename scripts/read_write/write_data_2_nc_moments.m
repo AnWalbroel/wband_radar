@@ -63,7 +63,7 @@ id_MSL = defh.msl(ncid);
 id_Ze = netcdf.defVar(ncid,'ze','nc_float',[did_height,did_time]);
 netcdf.putAtt(ncid,id_Ze,'long_name','equivalent radar reflectivity factor');
 netcdf.putAtt(ncid,id_Ze,'standard_name','equivalent_reflectivity_factor');
-netcdf.putAtt(ncid,id_Ze,'units','dB');
+netcdf.putAtt(ncid,id_Ze,'units','dBZ');
 netcdf.putAtt(ncid,id_Ze,'ancillary_variables','quality_flag, ze_calibration');
 netcdf.defVarFill(ncid,id_Ze,false,NaN('single'))
 defh.ze_comment(data, ncid, id_Ze) % add comment about ze corrections
