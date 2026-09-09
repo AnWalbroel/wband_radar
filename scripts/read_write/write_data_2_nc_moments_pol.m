@@ -62,28 +62,28 @@ id_MSL = defh.msl(ncid);
 %--- radar moments ---
 
 id_Ze = netcdf.defVar(ncid,'ze','nc_float',[did_height,did_time]);
-netcdf.putAtt(ncid,id_Ze,'long_name','equivalent radar reflectivity factor');
-netcdf.putAtt(ncid,id_Ze,'standard_name','equivalent_reflectivity_factor');
-netcdf.putAtt(ncid,id_Ze,'units','dB');
+netcdf.putAtt(ncid,id_Ze,'long_name','equivalent radar reflectivity factor at 167.3 GHz');
+netcdf.putAtt(ncid,id_Ze,'standard_name','equivalent_reflectivity_factor_167');
+netcdf.putAtt(ncid,id_Ze,'units','dBZ');
 netcdf.putAtt(ncid,id_Ze,'ancillary_variables','quality_flag, ze_calibration');
 netcdf.defVarFill(ncid,id_Ze,false,NaN('single'))
 defh.ze_comment(data, ncid, id_Ze) % add comment about ze corrections
 
 id_vm = netcdf.defVar(ncid,'vm','nc_float',[did_height,did_time]);
-netcdf.putAtt(ncid,id_vm,'long_name','mean Doppler velocity');
+netcdf.putAtt(ncid,id_vm,'long_name','mean Doppler velocity at 167.3 GHz');
 netcdf.putAtt(ncid,id_vm,'units','m s-1');
 netcdf.putAtt(ncid,id_vm,'ancillary_variables','quality_flag');    
 netcdf.defVarFill(ncid,id_vm,false,NaN('single'))
 netcdf.putAtt(ncid,id_vm,'comment',['negative velocities indicate particles moving downwards'])
 
 id_sigma = netcdf.defVar(ncid,'sw','nc_float',[did_height,did_time]);
-netcdf.putAtt(ncid,id_sigma,'long_name','Doppler spectrum width');
+netcdf.putAtt(ncid,id_sigma,'long_name','Doppler spectrum width at 167.3 GHz');
 netcdf.putAtt(ncid,id_sigma,'units','m s-1');
 netcdf.putAtt(ncid,id_sigma,'ancillary_variables','quality_flag');    
 netcdf.defVarFill(ncid,id_sigma,false,NaN('single'))
 
 id_skew = netcdf.defVar(ncid,'skew','nc_float',[did_height,did_time]);
-netcdf.putAtt(ncid,id_skew,'long_name','Doppler spectrum skewness');
+netcdf.putAtt(ncid,id_skew,'long_name','Doppler spectrum skewness at 167.3 GHz');
 netcdf.putAtt(ncid,id_skew,'units','unitless');
 netcdf.putAtt(ncid,id_skew,'ancillary_variables','quality_flag');
 netcdf.defVarFill(ncid,id_skew,false,NaN('single'))
@@ -96,19 +96,19 @@ netcdf.defVarFill(ncid,id_kurt,false,NaN('single'))
 
 if data.DualPol > 0
     id_ldr = netcdf.defVar(ncid,'ldr','nc_float',[did_height,did_time]);
-    netcdf.putAtt(ncid,id_ldr,'long_name','Linear depolarization ratio');
+    netcdf.putAtt(ncid,id_ldr,'long_name','Differential Absorption dual-frequency ratio 174-167');
     netcdf.putAtt(ncid,id_ldr,'units','dB');
     netcdf.putAtt(ncid,id_ldr,'ancillary_variables','quality_flag');
     netcdf.defVarFill(ncid,id_ldr,false,NaN('single'))
 
     id_Ze_hv = netcdf.defVar(ncid,'ze_hv','nc_float',[did_height,did_time]);
-    netcdf.putAtt(ncid,id_Ze_hv,'long_name','Cross-polar reflectivity factor');
-    netcdf.putAtt(ncid,id_Ze_hv,'units','dB');
+    netcdf.putAtt(ncid,id_Ze_hv,'long_name','equivalent radar reflectivity factor at 174.7 GHz');
+    netcdf.putAtt(ncid,id_Ze_hv,'units','dBZ');
     netcdf.putAtt(ncid,id_Ze_hv,'ancillary_variables','quality_flag');
     netcdf.defVarFill(ncid,id_Ze_hv,false,NaN('single'))
 
     id_vm_hv = netcdf.defVar(ncid,'vm_hv','nc_float',[did_height,did_time]);
-    netcdf.putAtt(ncid,id_vm_hv,'long_name','Cross-polar mean Doppler velocity');
+    netcdf.putAtt(ncid,id_vm_hv,'long_name','mean Doppler velocity at 174.7 GHz');
     netcdf.putAtt(ncid,id_vm_hv,'units','m s-1');
     netcdf.putAtt(ncid,id_vm_hv,'ancillary_variables','quality_flag');
     netcdf.defVarFill(ncid,id_vm_hv,false,NaN('single'))
@@ -116,7 +116,7 @@ if data.DualPol > 0
 
     if isfield(data, 'SLh')
         id_SLh = netcdf.defVar(ncid,'noise_threshold_cross','nc_float',[did_height,did_time]);
-        netcdf.putAtt(ncid,id_SLh,'long_name','cross-polarization signal strength threshold used for data logging');
+        netcdf.putAtt(ncid,id_SLh,'long_name',' signal strength threshold used for data logging at 174.7 GHz');
         netcdf.putAtt(ncid,id_SLh,'units','mm6/m3');
         netcdf.defVarFill(ncid,id_SLh,false,NaN('single'))
     end
