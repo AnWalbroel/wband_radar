@@ -53,6 +53,29 @@ end % if
 % Before radar software version 5.0 need to correct for incorrectly 
 % estimated receiver gain: factor of 2/adding +3 dB.
 
-
+%% correct for intercalibration biases
+if data.time(1) >= datetimeconv(2024,08,09) && data.time(1) <= datetimeconv(2024,09,11) %vampire-1 before LN2 calibration
+    dboffset = -1.11;  % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
+    data.spec = data.spec*(10^(dboffset/10)); % apply offset to Ze measurements in linear mm^6 m^-3 units
+    data.Ze_label = 'Ze corrected with 1.11 dB (for intercalibration with W-band) such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
+    data.Ze_corr = dboffset; 
+elseif datetimeconv(2024,09,11) < data.time(1) && data.time(1) <= datetimeconv(2024,10,13) %vampire-1 after LN2 calibration
+    dboffset = 0.74; % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
+    data.spec = data.spec*(10^(dboffset/10)); % apply offset to Ze measurements in linear mm^6 m^-3 units
+    data.Ze_label = 'Ze corrected with -0.74  dB (for intercalibration with W-band) such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
+    data.Ze_corr = dboffset;
+elseif data.time(1) >= datetimeconv(2025,07,02) && data.time(1) <= datetimeconv(2025,08,06) % vampire-2 before LN2 calibration
+    dboffset = -1.3; % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
+    data.spec*(10^(dboffset/10)); % apply offset to Ze measurements in linear mm^6 m^-3 units
+    data.Ze_label = 'Ze corrected with 1.30dB (for intercalibration with W-band)such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
+    data.Ze_corr = dboffset;
+elseif data.time(1) > datetimeconv(2025,08,06) && data.time(1) <= datetimeconv(2025,09,01) % vampire-2 after LN2 calibration
+    dboffset = -2.29; % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
+    data.spec*(10^(dboffset/10)); %apply offset to Ze measurements in linear mm^6 m^-3 units
+    data.Ze_label = 'Ze corrected with 2.29dB (for intercalibration with W-band) such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
+    data.Ze_corr = dboffset;
+else
+    disp('no intercalibration bias was applied to measurements.')
+end
 
     
