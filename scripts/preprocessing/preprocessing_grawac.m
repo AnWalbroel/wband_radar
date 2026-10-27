@@ -51,25 +51,25 @@ end % if
 %% ######## Ze corrections
 
 %% correct for intercalibration biases
-if data.time(1) >= datetimeconv(2024,08,10) && data.time(1) <= datetimeconv(2024,09,11,16,20) %vampire-1 before LN2 calibration
+if data.time(1) >= datetimeconv(2024,08,10) && data.time(1) <= datetimeconv(2024,09,11,16,20,0) %vampire-1 before LN2 calibration
     dboffset = 1.11;  % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
     data.spec = data.spec*(10^(dboffset/10)); % apply offset to Ze measurements in linear mm^6 m^-3 units
     data.Ze_label = 'Ze corrected with 1.11 dB (for intercalibration with W-band) such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
     data.Ze_corr = dboffset;
     disp('Intercalibration bias...');
-elseif datetimeconv(2024,09,11,16,20) < data.time(1) && data.time(1) <= datetimeconv(2024,10,08) %vampire-1 after LN2 calibration
+elseif datetimeconv(2024,09,11,16,20,0) < data.time(1) && data.time(1) <= datetimeconv(2024,10,08) %vampire-1 after LN2 calibration
     dboffset = -0.74; % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
     data.spec = data.spec*(10^(dboffset/10)); % apply offset to Ze measurements in linear mm^6 m^-3 units
     data.Ze_label = 'Ze corrected with -0.74  dB (for intercalibration with W-band) such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
     data.Ze_corr = dboffset;
     disp('Intercalibration bias...');
-elseif data.time(1) >= datetimeconv(2025,07,02,13,47) && data.time(1) <= datetimeconv(2025,08,06,17,04) % vampire-2 before LN2 calibration
+elseif data.time(1) >= datetimeconv(2025,07,02,13,47,0) && data.time(1) <= datetimeconv(2025,08,06,17,04,0) % vampire-2 before LN2 calibration
     dboffset = 1.3; % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
     data.spec*(10^(dboffset/10)); % apply offset to Ze measurements in linear mm^6 m^-3 units
     data.Ze_label = 'Ze corrected with 1.30dB (for intercalibration with W-band)such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
     data.Ze_corr = dboffset;
     disp('Intercalibration bias...');
-elseif data.time(1) > datetimeconv(2025,08,06,19,02) && data.time(1) <= datetimeconv(2025,08,30) % vampire-2 after LN2 calibration
+elseif data.time(1) > datetimeconv(2025,08,06,19,02,0) && data.time(1) <= datetimeconv(2025,08,30) % vampire-2 after LN2 calibration
     dboffset = 2.29; % in dB; this offset will be added to GRaWAC Ze [dBZ] such that Ze [dBZ] = Ze_measured [dBZ] + dboffset [dB]
     data.spec*(10^(dboffset/10)); %apply offset to Ze measurements in linear mm^6 m^-3 units
     data.Ze_label = 'Ze corrected with 2.29dB (for intercalibration with W-band) such that Ze [dBZ] = Ze_measured [dBZ] + Ze_corr [dB].';
