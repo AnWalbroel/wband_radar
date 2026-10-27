@@ -80,6 +80,5 @@ elseif data.time(1) > datetimeconv(2025,08,06,19,02,0) && data.time(1) <= dateti
 else
     disp('no intercalibration bias was applied to measurements.')
 end %if
-disp('Intercalibration bias...done!')
 
     
