@@ -102,7 +102,11 @@ data.ChirpIntTime = ChirpIntegrationTimes(data.DoppMax, data.freq, data.SeqAvg);
 
 % set -999 values to NaN
 data = fill2nan_struct(data,-999); 
-    
+
+if isfield(data, 'radarsw')
+    data.radarsw = string(data.radarsw);
+    data.radarsw = insertAfter(data.radarsw, strlength(data.radarsw)-2, '.');
+end
 
 % separate blower and heater flags 
 data.blower = NaN(size(data.status));
