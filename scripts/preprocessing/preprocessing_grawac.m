@@ -39,7 +39,7 @@ elseif datetimeconv(2026,03,01,0,0,0) <= data.time(1) && data.time(1) < datetime
 elseif datetimeconv(2026,05,22,0,0,0) <= data.time(1) && data.time(1) < datetimeconv(2026,08,20,0,0,0) % Vital-II
     data.radarsw = '5.65';
 elseif datetimeconv(2026,10,20,0,0,0) <= data.time(1) % Ny-Alesund
-    data.radarsw = '5.67'
+    data.radarsw = '5.67';
 else    
     disp('From function preprocessing_grawac: Radar software version not defined!')
     
