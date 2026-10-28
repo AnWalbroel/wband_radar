@@ -96,7 +96,9 @@ function data = read_lv0_v3(infile)
     data.PhaseCorr = int8(fread(fid,1,'char*1')); % flag indicating, if phase correction (dual. pol. radars) has been used (0=yes, 1=no)
     data.RelPowCorr = int8(fread(fid,1,'char*1')); % flag indicating, if relative power correction (dual. pol. radars) has been used (0=yes, 1=no)
     data.FFTWindow = int8(fread(fid,1,'char*1')); % FFT window in use: 0 = SQUARE; 1 = PARZEN; 2 = BLACKMAN; 3 = WELCH; 4 = SLEPIAN2; 5 = SLEPIAN3
-    data.FFTInputRng = int32(fread(fid,1,'int')); % ADC input voltage range (+/-)
+    data.FFTInputRng = int32(fread(fid,1,'ushort')); % ADC input voltage range (+/-)
+    data.radarsw = string(int32(fread(fid,1,'ushort'))); % Radar software version * 100
+    data.radarsw = insertAfter(data.radarsw, strlength(data.radarsw)-2, '.');
     data.NoiseFilt = single(fread(fid,1,'single')); % noise filter threshold factor (multiple of STD in Doppler spectra)
     
     % reserved for future use
