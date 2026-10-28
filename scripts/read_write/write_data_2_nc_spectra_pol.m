@@ -140,7 +140,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 id_spec = zeros(1,data.no_chirp_seq);
-
 for ch = 1:data.no_chirp_seq
     
     id_spec(ch) = netcdf.defVar(ncid,['spec_ch' num2str(ch)],'nc_float',[did_vel(ch),did_hght(ch),did_time]);
@@ -149,6 +148,17 @@ for ch = 1:data.no_chirp_seq
     netcdf.putAtt(ncid,id_spec(ch),'ancillary_variables','quality_flag, ze_calibration');
     netcdf.defVarFill(ncid,id_spec(ch),false,NaN('single'))
     defh.ze_comment(data, ncid, id_spec(ch)) % add comment about ze corrections
+end
+
+if data.DualPol > 0
+    id_spec_hv = zeros(1,data.no_chirp_seq);
+    for ch = 1:data.no_chirp_seq
+        id_spec_hv(ch) = netcdf.defVar(ncid,['spec_hv_ch' num2str(ch)],'nc_float',[did_vel(ch),did_hght(ch),did_time]);
+        netcdf.putAtt(ncid,id_spec_hv(ch),'long_name',['Crosspolar Doppler spectra for chirp ' num2str(ch)]);
+        netcdf.putAtt(ncid,id_spec_hv(ch),'units','dB');  
+        netcdf.putAtt(ncid,id_spec_hv(ch),'ancillary_variables','quality_flag');
+        netcdf.defVarFill(ncid,id_spec_hv(ch),false,NaN('single'))
+    end
 end
 
 
@@ -296,6 +306,7 @@ if data.DualPol > 0
     if isfield(data, 'SLh')
         netcdf.defVarDeflate(ncid,id_SLh,true,true,5);
     end
+    netcdf.defVarDeflate(ncid,id_spec_hv(ch),true,true,5);
 end
 
 
@@ -403,6 +414,29 @@ for ch = data.no_chirp_seq:-1:1
     netcdf.putVar(ncid,id_spec(ch),[0,0,0],[length(velocity.(['chirp_' num2str(ch)])),n_levels_ch(ch),data.totsamp],permute( 10.*log10(spec_temp) ,[3,2,1]));
 
     clear spec_temp
+end
+
+if data.DualPol > 0
+    for ch = data.no_chirp_seq:-1:1
+        % create new spectra array with new velocity dimensions
+        spec_temp = NaN([length(data.time),  range_offs(ch+1) - range_offs(ch), length(velocity.(['chirp_' num2str(ch)]))], 'single');
+
+        % sample the shifted spectra into a fixed velocity dimension using linear indexing
+        [sx, sy, sz] = size(spec_temp);
+        
+        I1 = repmat([1:sx], [1 sy*data.DoppLen(ch)])';
+        I2 = reshape(repmat(1:sy, [sx data.DoppLen(ch)]), 1, [])';
+        I3 = repmat(start_ind.(['chirp_' num2str(ch)])(:), 1, single(data.DoppLen(ch))) + repmat([0:single(data.DoppLen(ch))-1], sx*sy,1);
+
+        idx = sub2ind([sx, sy, sz], I1, I2, I3(:));
+        
+        % add shifted spectra in new array
+        spec_temp(idx) = data.spec_hv(:,range_offs(ch):range_offs(ch+1)-1,1:data.DoppLen(ch));
+        
+        netcdf.putVar(ncid,id_spec_hv(ch),[0,0,0],[length(velocity.(['chirp_' num2str(ch)])),n_levels_ch(ch),data.totsamp],permute( 10.*log10(spec_temp) ,[3,2,1]));
+
+        clear spec_temp
+    end
 end
 
 % netcdf.putVar(ncid,id_vel,[0,0],[max(data.DoppLen),data.no_chirp_seq],data.velocity');
