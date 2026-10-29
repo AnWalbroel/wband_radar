@@ -306,7 +306,9 @@ if data.DualPol > 0
     if isfield(data, 'SLh')
         netcdf.defVarDeflate(ncid,id_SLh,true,true,5);
     end
-    netcdf.defVarDeflate(ncid,id_spec_hv(ch),true,true,5);
+    for ch = 1:data.no_chirp_seq
+        netcdf.defVarDeflate(ncid,id_spec_hv(ch),true,true,5);
+    end
 end
 
 
